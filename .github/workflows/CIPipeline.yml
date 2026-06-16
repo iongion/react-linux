@@ -64,6 +64,7 @@ jobs:
       - name: Install GNOME Shell dev dependencies
         env:
           REACT_LINUX_APT_CACHE_DIR: ${{ github.workspace }}/.cache/apt/archives
+          REACT_LINUX_APT_NO_INSTALL_RECOMMENDS: "1"
         run: make prepare-system
       - name: Normalize GNOME apt package cache ownership
         if: always()
