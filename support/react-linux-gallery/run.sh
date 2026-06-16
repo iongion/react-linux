@@ -146,6 +146,18 @@ scan_shell_log_for_errors() {
   fi
 }
 
+require_headless_shell_dependencies() {
+  if ! command -v gnome-shell >/dev/null 2>&1; then
+    echo "gnome-shell was not found; install GNOME Shell before running headless smoke." >&2
+    exit 1
+  fi
+  if ! gsettings list-schemas | rg -qx "org\\.gnome\\.shell"; then
+    echo "GNOME Shell gsettings schema org.gnome.shell was not found." >&2
+    echo "Install the distro package that provides GNOME Shell schemas before running headless smoke." >&2
+    exit 1
+  fi
+}
+
 wait_for_headless_extension() {
   local log_file="$1"
   for _ in $(seq 1 80); do
@@ -166,6 +178,8 @@ wait_for_headless_extension() {
 }
 
 run_gnome_smoke() {
+  require_headless_shell_dependencies
+
   local xdg_data_home
   local log_file
   xdg_data_home="$(mktemp -d)"

@@ -36,6 +36,10 @@ apt_libmutter_dev_package() {
     | tail -n 1
 }
 
+apt_package_exists() {
+  apt-cache show "$1" >/dev/null 2>&1
+}
+
 install_best_effort_packages() {
   local package_manager="$1"
   local note="$2"
@@ -69,7 +73,12 @@ install_gnome_shell_dev_tools() {
       local libmutter_dev
       $SUDO apt-get update
       libmutter_dev="$(apt_libmutter_dev_package)"
-      $SUDO apt-get install -y gnome-shell mutter-dev-bin || warn "$note"
+      $SUDO apt-get install -y gnome-shell || warn "GNOME Shell failed to install (headless smoke will not run)."
+      if apt_package_exists mutter-dev-bin; then
+        $SUDO apt-get install -y mutter-dev-bin || warn "$note"
+      else
+        warn "mutter-dev-bin is unavailable on this apt distribution; visible devkit support may be missing."
+      fi
       if [ -n "$libmutter_dev" ]; then
         $SUDO apt-get install -y "$libmutter_dev" || warn "$note"
       else
