@@ -42,6 +42,7 @@ from the extension and maps React host types to Shell objects.
 | GNOME Shell entry point | `gnomeShell.ts` | Creates a root from a Shell container and GNOME Shell toolkit. |
 | GNOME Shell adapter | `stAdapter.ts` | Implements the generic adapter contract for Shell `St`/menu/quick settings objects. |
 | GNOME Shell backend internals | `gnome-shell/` | Object construction, prop mapping, child attachment, and signal lifecycle. |
+| GNOME Shell transports | `gnome-shell/unixSocketHttp.ts` | Optional Gio-backed HTTP over Unix sockets, including an Axios-compatible adapter. |
 | GNOME Shell primitives | `primitives.ts` | Current typed React components for Shell `St`, `PopupMenu`, and `QuickSettings`. |
 | Mock backend | `mockAdapter.ts` | Test-only adapter for renderer behavior without GNOME Shell. |
 
@@ -103,6 +104,12 @@ const root = createGnomeShellRoot(
 The package receives those modules as a toolkit object. It must not import Shell
 globals at package load time; that keeps the core testable and keeps runtime
 ownership with the extension.
+
+Shell-side transport helpers follow the same rule. For example,
+`gnome-shell/unixSocketHttp.ts` receives `{ Gio, GLib }` from the extension and
+uses `Gio.SocketClient` for Unix socket HTTP. It does not use Node's `http`,
+`net`, or Axios Node adapter runtime. See
+[Unix Socket HTTP](unix-socket-http.md).
 
 ## Component Model
 

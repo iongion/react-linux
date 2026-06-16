@@ -10,6 +10,10 @@
     ".": {
       "types": "./index.ts",
       "default": "./index.ts"
+    },
+    "./gnome-shell/unix-socket-http": {
+      "types": "./gnome-shell/unixSocketHttp.ts",
+      "default": "./gnome-shell/unixSocketHttp.ts"
     }
   },
   "files": [

@@ -174,6 +174,27 @@ Arbitrary GObject/Shell signals can be bound without adding a new React prop:
 />;
 ```
 
+## Unix Socket HTTP
+
+GNOME Shell does not provide Node's `http`, `net`, or Axios Node adapter
+runtime. For HTTP over a Unix socket inside Shell, use the Gio-backed adapter:
+
+```ts
+import Gio from "gi://Gio";
+import GLib from "gi://GLib";
+import axios from "axios";
+import { createGioUnixSocketAxiosAdapter } from "react-linux/gnome-shell/unix-socket-http";
+
+const api = axios.create({
+  adapter: createGioUnixSocketAxiosAdapter({ Gio, GLib }, { socketPath: "/run/user/1000/app.sock" }),
+});
+
+const response = await api.get("/v1/state");
+```
+
+The same module also exports `requestGioUnixHttp` for Shell code that should not
+pull Axios into the extension bundle.
+
 ## Internal layout
 
 The public renderer files stay at the package root. GNOME Shell-specific

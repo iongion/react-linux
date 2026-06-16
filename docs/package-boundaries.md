@@ -15,6 +15,8 @@ The implemented backend today may know about:
 - GNOME Shell `St` actors;
 - GNOME Shell `PopupMenu` objects;
 - GNOME Shell `QuickSettings` objects;
+- optional GNOME Shell transport helpers built on Gio/GLib, such as local HTTP
+  over Unix sockets;
 - small adapter escape hatches for GNOME Shell objects that are not typed yet.
 
 It must not know about:
@@ -74,3 +76,8 @@ implementation details live under `gnome-shell/`:
 Future GNOME Shell modules should follow the same boundary. Future non-Shell
 backends should get their own backend directory, adapter, primitives, tests, and
 sample harness.
+
+GNOME Shell transport helpers must keep runtime ownership with the extension.
+They should accept Shell modules such as `{ Gio, GLib }` as parameters instead
+of importing `gi://` modules at package load time, and they must not depend on
+Node-only transports such as Axios' built-in `socketPath` support.

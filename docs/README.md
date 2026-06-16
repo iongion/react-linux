@@ -15,6 +15,8 @@ implemented now.
   package and what must stay outside it.
 - [Development workflow](development.md) - visible GNOME devkit, smoke tests,
   and sample-gallery workflow for exercising the renderer in real Shell.
+- [Unix Socket HTTP](unix-socket-http.md) - Gio-backed HTTP transport and
+  Axios-compatible adapter for GNOME Shell extensions.
 
 ## Current status
 
