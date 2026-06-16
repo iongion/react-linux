@@ -116,6 +116,27 @@ install_gnome_shell_dev_tools() {
   esac
 }
 
+install_gnome_shell_smoke_tools() {
+  local package_manager="$1"
+  local note="GNOME Shell smoke dependencies failed to install."
+
+  case "$package_manager" in
+    apt)
+      apt_get update
+      apt_install gnome-shell libglib2.0-bin || warn "$note"
+      ;;
+    dnf|yum)
+      $SUDO "$package_manager" install -y gnome-shell glib2 || warn "$note"
+      ;;
+    pacman)
+      $SUDO pacman -S --needed --noconfirm gnome-shell glib2 || warn "$note"
+      ;;
+    *)
+      warn "Unsupported package manager. Install GNOME Shell, gsettings, and gdbus manually."
+      ;;
+  esac
+}
+
 install_visual_dev_tools() {
   local package_manager="$1"
   local note="Native UI visual/debug tooling may be incomplete."
@@ -182,8 +203,20 @@ main() {
 
   local package_manager
   package_manager="$(pm)"
-  install_gnome_shell_dev_tools "$package_manager"
-  install_visual_dev_tools "$package_manager"
+  case "${REACT_LINUX_PROVISION_PROFILE:-dev}" in
+    smoke)
+      install_gnome_shell_smoke_tools "$package_manager"
+      ;;
+    dev)
+      install_gnome_shell_dev_tools "$package_manager"
+      install_visual_dev_tools "$package_manager"
+      ;;
+    *)
+      echo "Unknown REACT_LINUX_PROVISION_PROFILE=${REACT_LINUX_PROVISION_PROFILE:-}" >&2
+      echo "Use REACT_LINUX_PROVISION_PROFILE=dev or REACT_LINUX_PROVISION_PROFILE=smoke." >&2
+      exit 1
+      ;;
+  esac
 
   if [ -x /usr/libexec/mutter-devkit ]; then
     echo "ok: /usr/libexec/mutter-devkit"

@@ -65,6 +65,7 @@ jobs:
         env:
           REACT_LINUX_APT_CACHE_DIR: ${{ github.workspace }}/.cache/apt/archives
           REACT_LINUX_APT_NO_INSTALL_RECOMMENDS: "1"
+          REACT_LINUX_PROVISION_PROFILE: "smoke"
         run: make prepare-system
       - name: Normalize GNOME apt package cache ownership
         if: always()

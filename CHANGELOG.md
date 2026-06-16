@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - CI now caches Yarn packages and the GNOME apt archive downloads used by the headless Shell smoke job.
 - CI GNOME provisioning now uses apt `--no-install-recommends` to avoid installing unrelated recommended desktop packages for the smoke runner.
+- CI GNOME provisioning now uses a smoke-only package profile instead of installing the visible devkit and visual debugging tools.
 
 ## Fixed
 
