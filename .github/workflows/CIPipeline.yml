@@ -1,0 +1,56 @@
+name: CIPipeline
+
+# Continuous-integration gate for the extracted react-linux package.
+# The package's runtime contract is native Linux UI, so CI runs both the normal
+# TypeScript/package checks and a real headless GNOME Shell extension smoke.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package:
+    name: Package - types, lint, tests, build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      - name: Use Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version-file: ".nvmrc"
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --production=false
+      - name: Type-check
+        run: yarn check-types
+      - name: Lint (biome check, no writes)
+        run: yarn lint:check
+      - name: Unit tests
+        run: yarn test:run
+      - name: Build
+        run: yarn build
+
+  gnome-shell:
+    name: GNOME Shell smoke
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      - name: Use Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version-file: ".nvmrc"
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --production=false
+      - name: Install GNOME Shell dev dependencies
+        run: make prepare-system
+      - name: Headless GNOME Shell smoke
+        run: yarn gnome-smoke

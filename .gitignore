@@ -28,5 +28,8 @@ vite.config.ts.timestamp-*
 # Gallery build scratch
 support/react-linux-gallery/.gnome-build/
 
+# Local experiments
+temp/
+
 # Temporary files
 temp/

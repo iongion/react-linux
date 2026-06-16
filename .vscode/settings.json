@@ -1,0 +1,76 @@
+{
+  "eslint.enable": false,
+  "prettier.enable": false,
+  "biome.enabled": true,
+  "biome.lsp.bin": "./node_modules/.bin/biome",
+  "[javascript]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.biome": "explicit"
+    },
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescript]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.biome": "explicit"
+    },
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.tabSize": 2
+  },
+  "[typescriptreact]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.biome": "explicit"
+    },
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.tabSize": 2
+  },
+  "editor.wordWrap": "off",
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "cSpell.language": "en,en-GB",
+  "cSpell.ignorePaths": [
+    ".git/**",
+    ".vscode/**",
+    "build/**",
+    "coverage/**",
+    "dist/**",
+    "node_modules/**",
+    "support/react-linux-gallery/.gnome-build/**",
+    "temp/**",
+    "yarn.lock"
+  ],
+  "cSpell.words": [
+    "Adwaita",
+    "DBUS",
+    "devkit",
+    "gdbus",
+    "gicon",
+    "gjs",
+    "gobject",
+    "gtype",
+    "iface",
+    "libadwaita",
+    "libexec",
+    "libglib",
+    "libmutter",
+    "mwarning",
+    "noconfirm",
+    "pacman",
+    "pgrep",
+    "pngquant",
+    "procps",
+    "psmisc",
+    "quickmenu",
+    "reconciler",
+    "relayout",
+    "relayouts",
+    "rtype",
+    "stylesheet",
+    "typelibs",
+    "vite"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "GNOME Gallery",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "yarn gnome",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "order": 1
+      }
+    },
+    {
+      "name": "GNOME UI Smoke",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "yarn gnome-ui-smoke",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "order": 2
+      }
+    },
+    {
+      "name": "Vitest",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "yarn test",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "order": 3
+      }
+    }
+  ]
+}

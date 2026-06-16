@@ -1,0 +1,108 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "prepare",
+      "detail": "Install package dependencies with the pinned yarn lockfile.",
+      "type": "shell",
+      "command": "yarn install --frozen-lockfile",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "prepare: system deps",
+      "detail": "Install GNOME Shell devkit and native UI visual-debug dependencies.",
+      "type": "shell",
+      "command": "make prepare-system",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "gnome: gallery",
+      "detail": "Run the visible GNOME Shell devkit gallery loop.",
+      "type": "shell",
+      "command": "yarn gnome",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "gnome: ui smoke",
+      "detail": "Run DBus-driven native gallery interaction and screenshot smoke.",
+      "type": "shell",
+      "command": "yarn gnome-ui-smoke",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "gnome: headless smoke",
+      "detail": "Run the real headless GNOME Shell extension smoke.",
+      "type": "shell",
+      "command": "yarn gnome-smoke",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "test",
+      "type": "shell",
+      "command": "yarn test:run",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "check",
+      "type": "shell",
+      "command": "make check",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "yarn build",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}

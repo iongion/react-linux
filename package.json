@@ -1,0 +1,65 @@
+{
+  "name": "react-linux",
+  "version": "1.0.0",
+  "description": "Experimental React renderer package for Linux-native UI runtimes.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": {
+      "types": "./index.ts",
+      "default": "./index.ts"
+    }
+  },
+  "files": [
+    "*.ts",
+    "*.tsx",
+    "descriptors",
+    "gnome-shell",
+    "layout",
+    "docs",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "biome": "biome",
+    "build": "yarn check-types && yarn gnome-build",
+    "bump": "node --experimental-strip-types tools/bump.mts",
+    "check-types": "tsc",
+    "format": "biome format --write .",
+    "gnome": "support/react-linux-gallery/run.sh gnome",
+    "gnome-build": "support/react-linux-gallery/run.sh gnome-build",
+    "gnome-smoke": "support/react-linux-gallery/run.sh gnome-smoke",
+    "gnome-ui-smoke": "support/react-linux-gallery/run.sh gnome-ui-smoke",
+    "lint": "biome lint --write .",
+    "lint:check": "biome check .",
+    "release": "node --experimental-strip-types tools/bump.mts --perform",
+    "test": "vitest",
+    "test:run": "vitest run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/iongion/react-linux.git"
+  },
+  "peerDependencies": {
+    "react": "19.2.7"
+  },
+  "dependencies": {
+    "react-reconciler": "0.33.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.0",
+    "@types/node": "24.13.2",
+    "@types/react": "19.2.17",
+    "@types/semver": "7.7.1",
+    "@vitejs/plugin-react": "6.0.2",
+    "react": "19.2.7",
+    "semver": "7.7.2",
+    "typescript": "6.0.3",
+    "vite": "8.0.16",
+    "vitest": "4.1.9"
+  },
+  "packageManager": "yarn@1.22.22"
+}
