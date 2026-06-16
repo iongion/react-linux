@@ -472,7 +472,7 @@ Clutter's layout infrastructure (already inside every GNOME Shell process):
 
 | Clutter primitive | Flexbox equivalent | Quality |
 |---|---|---|
-| `Clutter.BoxLayout` orientation + spacing | `flex-direction: row/column` + `gap` | Native, GPU |
+| `St.BoxLayout` `vertical` + spacing | `flex-direction: row/column` + `gap` | Native, GPU |
 | `BoxLayout` child `x_expand` / `y_expand` | `flex-grow: 1` (boolean only) | Native, GPU |
 | `BoxLayout` child `x_align` / `y_align` | `align-items` / `align-self` | Native, GPU |
 | `BoxLayout` `homogeneous` | Equal-size children | Native, GPU |
@@ -504,7 +504,7 @@ Clutter's layout infrastructure (already inside every GNOME Shell process):
 ┌─────────────────────────────────────────────────────────────┐
 │  React commit phase                                         │
 │  1. Props applied to Clutter actors                         │
-│  2. Clutter.BoxLayout properties set (orientation, spacing, │
+│  2. St.BoxLayout properties set (vertical, spacing,         │
 │     expand, align)                                          │
 │  3. Children attached                                       │
 ├─────────────────────────────────────────────────────────────┤
@@ -818,10 +818,9 @@ function readActorY(actor: GnomeShellActor): number {
 }
 
 function isHorizontalLayout(parent: LayoutBox): boolean {
-  // Read from Clutter.BoxLayout orientation
-  const lm = parent.element.actor.layout_manager;
-  if (lm && typeof lm === "object" && "orientation" in lm) {
-    return (lm as any).orientation !== 1; // 1 = VERTICAL in Clutter
+  // Read from St.BoxLayout's stable direction property.
+  if (typeof parent.element.actor.vertical === "boolean") {
+    return parent.element.actor.vertical !== true;
   }
   // Fallback: read from style
   return parent.style.flexDirection !== "column";
@@ -955,13 +954,8 @@ export const BoxLayoutDescriptor: ComponentDescriptor = {
       style_class: classNameFor("st:BoxLayout", props, options),
     };
 
-    // Map React flex props → Clutter.BoxLayout properties
-    if (options.orientationValues) {
-      const isColumn = props.flexDirection === "column" || props.vertical === true;
-      actorProps.orientation = isColumn
-        ? options.orientationValues.vertical
-        : options.orientationValues.horizontal;
-    }
+    // Map React flex props → St.BoxLayout's stable direction property.
+    actorProps.vertical = props.flexDirection === "column" || props.vertical === true;
 
     if (props.gap !== undefined) {
       actorProps.spacing = props.gap;
@@ -983,11 +977,7 @@ export const BoxLayoutDescriptor: ComponentDescriptor = {
     }
     if (nextProps.flexDirection !== undefined || nextProps.vertical !== undefined) {
       const isColumn = nextProps.flexDirection === "column" || nextProps.vertical === true;
-      if (options.orientationValues) {
-        element.actor.orientation = isColumn
-          ? options.orientationValues.vertical
-          : options.orientationValues.horizontal;
-      }
+      element.actor.vertical = isColumn;
     }
 
     // TS solver props — collected for post-allocation solver

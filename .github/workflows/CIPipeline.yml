@@ -27,6 +27,8 @@ jobs:
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version-file: ".nvmrc"
+          cache: "yarn"
+          cache-dependency-path: "yarn.lock"
       - name: Install dependencies
         run: yarn install --frozen-lockfile --production=false
       - name: Type-check
@@ -48,9 +50,23 @@ jobs:
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version-file: ".nvmrc"
+          cache: "yarn"
+          cache-dependency-path: "yarn.lock"
       - name: Install dependencies
         run: yarn install --frozen-lockfile --production=false
+      - name: Restore GNOME apt package cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: .cache/apt/archives
+          key: gnome-apt-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('support/provision-deps.sh') }}
+          restore-keys: |
+            gnome-apt-${{ runner.os }}-${{ runner.arch }}-
       - name: Install GNOME Shell dev dependencies
+        env:
+          REACT_LINUX_APT_CACHE_DIR: ${{ github.workspace }}/.cache/apt/archives
         run: make prepare-system
+      - name: Normalize GNOME apt package cache ownership
+        if: always()
+        run: sudo chown -R "$USER:$USER" .cache/apt || true
       - name: Headless GNOME Shell smoke
         run: yarn gnome-smoke

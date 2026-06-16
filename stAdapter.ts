@@ -71,14 +71,6 @@ export function createStAdapter(
             start: toolkit.Clutter.ActorAlign.START,
           }
         : undefined),
-    orientationValues:
-      options.orientationValues ??
-      (toolkit.Clutter?.Orientation?.HORIZONTAL !== undefined && toolkit.Clutter.Orientation.VERTICAL !== undefined
-        ? {
-            horizontal: toolkit.Clutter.Orientation.HORIZONTAL,
-            vertical: toolkit.Clutter.Orientation.VERTICAL,
-          }
-        : undefined),
   };
 
   return {

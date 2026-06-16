@@ -178,15 +178,8 @@ function applyPopupProps(element: GnomeShellElement, props: ReactLinuxProps): vo
 function applyStProps(element: GnomeShellElement, props: ReactLinuxProps, options: CreateStAdapterOptions): void {
   switch (widgetNameFor(element.type)) {
     case "BoxLayout":
-      if (options.orientationValues) {
-        element.actor.orientation =
-          props.flexDirection === "column" || (props.flexDirection === undefined && props.vertical === true)
-            ? options.orientationValues.vertical
-            : options.orientationValues.horizontal;
-      } else {
-        element.actor.vertical =
-          props.flexDirection === "column" || (props.flexDirection === undefined && props.vertical === true);
-      }
+      element.actor.vertical =
+        props.flexDirection === "column" || (props.flexDirection === undefined && props.vertical === true);
       break;
     case "Button":
       element.actor.label = textValueFor(element.type, props);

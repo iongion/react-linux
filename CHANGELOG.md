@@ -11,8 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Node-based `yarn bump` / `yarn release` version automation for package metadata, renderer version sync, changelog promotion, and git commit/tag handoff.
 
+## Changed
+
+- CI now caches Yarn packages and the GNOME apt archive downloads used by the headless Shell smoke job.
+
 ## Fixed
 
+- `St.BoxLayout` direction now uses the stable `vertical` property instead of passing `orientation`, fixing extension startup on GNOME Shell 46.
 - Linux provisioning now installs required `gnome-shell` separately from optional `mutter-dev-bin`, so Ubuntu 24.04 CI runners can run headless GNOME Shell smoke even when visible Mutter devkit packages are unavailable.
 - GNOME Shell gallery runner no longer depends on `rg`, so headless smoke can run on fresh CI images without extra search tools.
 

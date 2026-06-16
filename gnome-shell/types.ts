@@ -73,10 +73,6 @@ export interface GnomeShellToolkit {
 export interface CreateStAdapterOptions {
   baseStyleClass?: string;
   eventStopValue?: unknown;
-  orientationValues?: {
-    horizontal: unknown;
-    vertical: unknown;
-  };
   alignValues?: {
     center: unknown;
     end: unknown;

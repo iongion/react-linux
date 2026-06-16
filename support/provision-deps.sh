@@ -6,8 +6,18 @@ if [ "${EUID:-$(id -u)}" -ne 0 ]; then
   SUDO="sudo"
 fi
 
+APT_CACHE_ARGS=()
+if [ -n "${REACT_LINUX_APT_CACHE_DIR:-}" ]; then
+  mkdir -p "$REACT_LINUX_APT_CACHE_DIR/partial"
+  APT_CACHE_ARGS=(-o "Dir::Cache::archives=$REACT_LINUX_APT_CACHE_DIR")
+fi
+
 warn() {
   printf "\033[1;33mwarning:\033[0m %s\n" "$*" >&2
+}
+
+apt_get() {
+  $SUDO apt-get "${APT_CACHE_ARGS[@]}" "$@"
 }
 
 pm() {
@@ -49,7 +59,7 @@ install_best_effort_packages() {
   for package in "$@"; do
     case "$package_manager" in
       apt)
-        $SUDO apt-get install -y "$package" || warn "Could not install $package. $note"
+        apt_get install -y "$package" || warn "Could not install $package. $note"
         ;;
       dnf|yum)
         $SUDO "$package_manager" install -y "$package" || warn "Could not install $package. $note"
@@ -71,16 +81,16 @@ install_gnome_shell_dev_tools() {
   case "$package_manager" in
     apt)
       local libmutter_dev
-      $SUDO apt-get update
+      apt_get update
       libmutter_dev="$(apt_libmutter_dev_package)"
-      $SUDO apt-get install -y gnome-shell || warn "GNOME Shell failed to install (headless smoke will not run)."
+      apt_get install -y gnome-shell || warn "GNOME Shell failed to install (headless smoke will not run)."
       if apt_package_exists mutter-dev-bin; then
-        $SUDO apt-get install -y mutter-dev-bin || warn "$note"
+        apt_get install -y mutter-dev-bin || warn "$note"
       else
         warn "mutter-dev-bin is unavailable on this apt distribution; visible devkit support may be missing."
       fi
       if [ -n "$libmutter_dev" ]; then
-        $SUDO apt-get install -y "$libmutter_dev" || warn "$note"
+        apt_get install -y "$libmutter_dev" || warn "$note"
       else
         warn "No libmutter-*-dev package found; development typelibs may be missing."
       fi

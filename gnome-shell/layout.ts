@@ -100,10 +100,6 @@ function setBoxLayoutDirection(
   options: CreateStAdapterOptions,
 ): void {
   const vertical = direction === "column" || (direction === undefined && props.vertical === true);
-  if (options.orientationValues) {
-    actor.orientation = vertical ? options.orientationValues.vertical : options.orientationValues.horizontal;
-    return;
-  }
   actor.vertical = vertical;
 }
 

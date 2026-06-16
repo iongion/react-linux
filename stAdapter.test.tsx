@@ -425,7 +425,8 @@ describe("react-linux St adapter", () => {
 
     const box = container.children[0];
     expect(box.actorType).toBe("BoxLayout");
-    expect(box.orientation).toBe("VERTICAL");
+    expect(box.vertical).toBe(true);
+    expect(box.orientation).toBeUndefined();
     expect(box.style_class).toContain("react-linux-box-layout");
     expect(box.style_class).toContain("sample-root");
 
@@ -478,7 +479,8 @@ describe("react-linux St adapter", () => {
     const label = box.children[0];
 
     expect(box.actorType).toBe("BoxLayout");
-    expect(box.orientation).toBe("VERTICAL");
+    expect(box.vertical).toBe(true);
+    expect(box.orientation).toBeUndefined();
     expect(box.spacing).toBe(10);
     expect(box.width).toBe(200);
     expect(box.height).toBe(100);

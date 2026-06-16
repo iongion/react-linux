@@ -22,15 +22,8 @@ function initialStProps(type: string, props: ReactLinuxProps, options: CreateStA
 
   switch (widgetNameFor(type)) {
     case "BoxLayout":
-      if (options.orientationValues) {
-        actorProps.orientation =
-          props.flexDirection === "column" || (props.flexDirection === undefined && props.vertical === true)
-            ? options.orientationValues.vertical
-            : options.orientationValues.horizontal;
-      } else {
-        actorProps.vertical =
-          props.flexDirection === "column" || (props.flexDirection === undefined && props.vertical === true);
-      }
+      actorProps.vertical =
+        props.flexDirection === "column" || (props.flexDirection === undefined && props.vertical === true);
       break;
     case "Button":
       actorProps.can_focus = props.canFocus ?? true;
