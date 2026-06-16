@@ -1,5 +1,6 @@
 import { propsWithoutChildren, type ReactLinuxProps } from "../adapter";
 import { componentFamilyFor } from "../descriptors/registry";
+import { actorForObject } from "./actors";
 import { isPopupType, popupObjectNameFor, widgetNameFor } from "./intrinsics";
 import { applyLayoutProps } from "./layout";
 import { classNameFor, numericProp, passthroughPropsFor, quickSettingsParamsFor, textValueFor } from "./props";
@@ -167,10 +168,11 @@ function applyPopupProps(element: GnomeShellElement, props: ReactLinuxProps): vo
   }
   if (popupObjectNameFor(element.type) === "PopupSubMenuMenuItem" && typeof props.open === "boolean") {
     element.object.setSubmenuShown?.(props.open);
-    if (props.open && typeof props.submenuHeight === "number" && element.object.menu?.actor) {
-      element.object.menu.actor.height = props.submenuHeight;
-      element.object.menu.actor.min_height = props.submenuHeight;
-      element.object.menu.actor.style = `height: ${props.submenuHeight}px; min-height: ${props.submenuHeight}px;`;
+    if (props.open && typeof props.submenuHeight === "number" && element.object.menu) {
+      const menuActor = actorForObject(element.object.menu);
+      menuActor.height = props.submenuHeight;
+      menuActor.min_height = props.submenuHeight;
+      menuActor.style = `height: ${props.submenuHeight}px; min-height: ${props.submenuHeight}px;`;
     }
   }
 }

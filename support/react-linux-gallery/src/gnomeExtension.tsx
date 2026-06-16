@@ -11,6 +11,7 @@ import * as PopupMenu from "resource:///org/gnome/shell/ui/popupMenu.js";
 import * as QuickSettings from "resource:///org/gnome/shell/ui/quickSettings.js";
 
 import { createGnomeShellRoot, type ReactLinuxRoot } from "../../..";
+import { actorForObject } from "../../../gnome-shell/actors";
 import { Gallery, galleryDevControls } from "./Gallery";
 
 type GalleryIndicator = InstanceType<typeof GalleryIndicatorClass>;
@@ -73,6 +74,10 @@ export default class ReactLinuxGalleryExtension extends Extension {
   private hostItem: PopupMenu.PopupBaseMenuItem | null = null;
   private root: ReactLinuxRoot | null = null;
 
+  private hostActor(): any | null {
+    return this.hostItem ? actorForObject(this.hostItem as any) : null;
+  }
+
   private dumpActor(actor: any, depth = 0): unknown {
     if (!actor || depth > 14) {
       return null;
@@ -105,7 +110,7 @@ export default class ReactLinuxGalleryExtension extends Extension {
     return JSON.stringify({
       menuOpen: Boolean(this.indicator?.menu.isOpen),
       stage: { height: stageHeight, width: stageWidth },
-      tree: this.dumpActor(this.hostItem?.actor),
+      tree: this.dumpActor(this.hostActor()),
     });
   }
 
@@ -127,7 +132,7 @@ export default class ReactLinuxGalleryExtension extends Extension {
       }
     };
 
-    visit(this.hostItem?.actor);
+    visit(this.hostActor());
   }
 
   private captureStage(filename: string): string {
@@ -159,7 +164,7 @@ export default class ReactLinuxGalleryExtension extends Extension {
     this.indicator.menu.addMenuItem(this.hostItem);
 
     this.root = createGnomeShellRoot(
-      this.hostItem.actor,
+      this.hostActor(),
       {
         Clutter,
         PopupMenu,

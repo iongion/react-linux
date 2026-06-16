@@ -21,6 +21,7 @@ import {
   StWidget,
   SystemIndicator,
 } from ".";
+import { actorForObject } from "./gnome-shell/actors";
 import type { GnomeShellToolkit } from "./stAdapter";
 
 type SignalCallback = (...args: unknown[]) => unknown;
@@ -159,6 +160,12 @@ class FakeClutterText extends FakeActor {
 
   set_text(value: string) {
     this.text = value;
+  }
+}
+
+class FakeActorWithDeprecatedActorGetter extends FakeActor {
+  get actor() {
+    throw new Error("Deprecated St actor getter was read");
   }
 }
 
@@ -446,6 +453,26 @@ describe("react-linux St adapter", () => {
     expect((box.children[3] as FakeEntry).clutterText.selectable).toBe(true);
     expect((box.children[3] as FakeEntry).clutterText.single_line_mode).toBe(true);
     expect((box.children[3] as FakeEntry).clutterText.text).toBe("filter");
+  });
+
+  it("does not read deprecated actor getters from raw St actor containers", () => {
+    const container = new FakeActorWithDeprecatedActorGetter("Root");
+    const root = createGnomeShellRoot(container, createToolkit());
+
+    expect(() => {
+      root.render(
+        <Box>
+          <Label>Containers</Label>
+        </Box>,
+      );
+    }).not.toThrow();
+    expect(container.children[0].actorType).toBe("BoxLayout");
+  });
+
+  it("does not read deprecated actor getters from actor-like Shell objects", () => {
+    const object = new FakeActorWithDeprecatedActorGetter("QuickToggle");
+
+    expect(actorForObject(object)).toBe(object);
   });
 
   it("can construct arbitrary available St widgets through StWidget", () => {

@@ -17,6 +17,7 @@ import {
   QuickSlider,
   QuickToggle,
 } from "../../..";
+import { actorForObject, isActorLike } from "../../../gnome-shell/actors";
 
 export const galleryDevControls: {
   activatePopupImage?: () => void;
@@ -51,15 +52,21 @@ function refFor(ref: RefObject<NativeActivatable | null>): Ref<unknown> {
 
 function activateNative(ref: RefObject<NativeActivatable | null>, fallback: () => void): void {
   const object = ref.current;
-  if (typeof object?.actor?.emit === "function") {
-    object.actor.emit("button-press-event", null);
+  if (!object) {
+    fallback();
     return;
   }
-  if (typeof object?.emit === "function") {
+
+  const actor = isActorLike(object) ? object : actorForObject(object as any);
+  if (typeof actor.emit === "function") {
+    actor.emit("button-press-event", null);
+    return;
+  }
+  if (typeof object.emit === "function") {
     object.emit("activate", null);
     return;
   }
-  if (typeof object?.activate === "function") {
+  if (typeof object.activate === "function") {
     object.activate();
     return;
   }

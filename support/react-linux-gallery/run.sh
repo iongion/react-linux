@@ -158,22 +158,32 @@ require_headless_shell_dependencies() {
   fi
 }
 
-wait_for_headless_extension() {
+wait_for_headless_gallery() {
   local log_file="$1"
+  local dump_file="/tmp/react-linux-gallery-dump.txt"
+  local err_file="/tmp/react-linux-gallery-dump.err"
   for _ in $(seq 1 80); do
-    if gdbus call --session --dest org.gnome.Shell.Extensions --object-path /org/gnome/Shell/Extensions --method org.gnome.Shell.Extensions.GetExtensionInfo "$UUID" >/tmp/react-linux-gallery-info.txt 2>/tmp/react-linux-gallery-info.err; then
-      if grep -Fq "'enabled': <true>" /tmp/react-linux-gallery-info.txt; then
-        sleep 1.5
-        cat /tmp/react-linux-gallery-info.txt
-        gdbus call --session --dest org.gnome.Shell.Extensions --object-path /org/gnome/Shell/Extensions --method org.gnome.Shell.Extensions.GetExtensionErrors "$UUID"
-        scan_shell_log_for_errors "$log_file"
-        return
-      fi
+    if gdbus call \
+      --session \
+      --dest org.gnome.Shell \
+      --object-path /org/react_linux/ReactLinuxGallery \
+      --method org.react_linux.ReactLinuxGallery.Dump \
+      >"$dump_file" 2>"$err_file"; then
+      sleep 1.5
+      scan_shell_log_for_errors "$log_file"
+      echo "ok: react-linux gallery DBus control is ready"
+      return
     fi
     sleep 0.25
   done
-  echo "Timed out waiting for GNOME Shell extension $UUID" >&2
-  cat "$log_file" >&2 || true
+
+  echo "Timed out waiting for react-linux gallery DBus control ($UUID)" >&2
+  if [[ -s "$err_file" ]]; then
+    echo "--- last gdbus error ---" >&2
+    cat "$err_file" >&2 || true
+  fi
+  echo "--- GNOME Shell log tail ---" >&2
+  tail -n "${REACT_LINUX_GALLERY_LOG_TAIL:-240}" "$log_file" >&2 || true
   exit 1
 }
 
@@ -187,9 +197,12 @@ run_gnome_smoke() {
   build_gnome_once "$(extension_dir "$xdg_data_home")" >/tmp/react-linux-gallery-headless-build.log 2>&1
 
   local script_path
+  local session_log
   script_path="$(mktemp)"
+  session_log="/tmp/react-linux-gallery-headless-session.log"
   write_shell_session_script "$script_path" headless
 
+  set +e
   XDG_DATA_HOME="$xdg_data_home" timeout 35s dbus-run-session -- bash -c "
     set -euo pipefail
     : >'$log_file'
@@ -201,10 +214,24 @@ run_gnome_smoke() {
     }
     trap cleanup EXIT
     $(declare -f scan_shell_log_for_errors)
-    $(declare -f wait_for_headless_extension)
+    $(declare -f wait_for_headless_gallery)
     UUID='$UUID'
-    wait_for_headless_extension '$log_file'
-  "
+    wait_for_headless_gallery '$log_file'
+  " >"$session_log" 2>&1
+  local status=$?
+  set -e
+
+  if [[ "$status" -ne 0 ]]; then
+    echo "Headless GNOME Shell smoke failed." >&2
+    echo "--- dbus-run-session log tail ---" >&2
+    tail -n "${REACT_LINUX_GALLERY_LOG_TAIL:-240}" "$session_log" >&2 || true
+    echo "--- GNOME Shell log tail ---" >&2
+    tail -n "${REACT_LINUX_GALLERY_LOG_TAIL:-240}" "$log_file" >&2 || true
+    rm -rf "$xdg_data_home"
+    exit "$status"
+  fi
+
+  echo "ok: headless GNOME Shell smoke passed"
 
   rm -rf "$xdg_data_home"
 }

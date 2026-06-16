@@ -1,5 +1,6 @@
 import type { ReactLinuxProps } from "../adapter";
 import { componentFamilyFor } from "../descriptors/registry";
+import { actorForObject } from "./actors";
 import { popupObjectNameFor, quickSettingsObjectNameFor, widgetNameFor } from "./intrinsics";
 import { classNameFor, popupParamsFor, quickSettingsParamsFor, textValueFor } from "./props";
 import type {
@@ -45,13 +46,6 @@ function initialStProps(type: string, props: ReactLinuxProps, options: CreateStA
   }
 
   return actorProps;
-}
-
-export function actorForObject(object: GnomeShellActor | GnomeShellObject): GnomeShellActor {
-  if (typeof object === "object" && object !== null && "actor" in object && object.actor) {
-    return object.actor as GnomeShellActor;
-  }
-  return object as GnomeShellActor;
 }
 
 function createActor(

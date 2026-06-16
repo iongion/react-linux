@@ -1,4 +1,5 @@
 import { componentChildContainerFor, componentChildPolicyFor } from "../descriptors/registry";
+import { actorForObject } from "./actors";
 import type {
   GnomeShellActor,
   GnomeShellContainer,
@@ -16,18 +17,11 @@ export function isShellNode(value: unknown): value is GnomeShellNode {
   );
 }
 
-function isObjectWithActor(value: unknown): value is GnomeShellObject {
-  return typeof value === "object" && value !== null && "actor" in value;
-}
-
 export function actorOf(value: GnomeShellNode | GnomeShellContainer): GnomeShellActor {
   if (isShellNode(value)) {
     return value.actor;
   }
-  if (isObjectWithActor(value) && value.actor) {
-    return value.actor;
-  }
-  return value as GnomeShellActor;
+  return actorForObject(value);
 }
 
 export function objectOf(value: GnomeShellNode | GnomeShellContainer): GnomeShellObject {
