@@ -4,6 +4,18 @@
   padding: 0;
 }
 
+.react-linux-gallery-indicator {
+  spacing: 6px;
+}
+
+.react-linux-gallery-performance {
+  color: #d8dee8;
+  font-size: 10px;
+  font-weight: bold;
+  height: 16px;
+  width: 78px;
+}
+
 .react-linux-label {
   color: inherit;
 }

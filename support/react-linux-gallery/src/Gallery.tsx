@@ -27,6 +27,7 @@ export const galleryDevControls: {
   setEntryText?: (value: string) => void;
   setProgress?: (value: number) => void;
   setSliderValue?: (value: number) => void;
+  setSubmenuOpen?: (open: boolean) => void;
   togglePopupSwitch?: () => void;
   toggleSubmenu?: () => void;
 } = {};
@@ -181,6 +182,17 @@ const PopupPanel = memo(function PopupPanel({ setLog }: { setLog: SetLog }) {
   const activateImage = useCallback(() => setLog("Image menu item activated"), [setLog]);
   const activateNested = useCallback(() => setLog("Nested submenu item activated"), [setLog]);
   const activateMoreAction = useCallback(() => setLog("More action activated"), [setLog]);
+  const setLoggedSubmenuOpen = useCallback(
+    (open: boolean) => {
+      setSubmenuOpen((current) => {
+        if (current !== open) {
+          setLog(`Submenu ${open ? "opened" : "closed"}`);
+        }
+        return open;
+      });
+    },
+    [setLog],
+  );
   const commitPopupSwitch = useCallback(
     (nextValue: boolean | ((current: boolean) => boolean), _source: string) => {
       setPopupEnabled((current) => {
@@ -216,16 +228,18 @@ const PopupPanel = memo(function PopupPanel({ setLog }: { setLog: SetLog }) {
   useEffect(() => {
     galleryDevControls.activatePopupOpen = () => activateNative(openItemRef, activateOpen);
     galleryDevControls.activatePopupImage = () => activateNative(imageItemRef, activateImage);
+    galleryDevControls.setSubmenuOpen = setLoggedSubmenuOpen;
     galleryDevControls.togglePopupSwitch = () => activateNative(switchItemRef, activatePopupSwitch);
     galleryDevControls.toggleSubmenu = () => activateNative(submenuRef, toggleSubmenu);
 
     return () => {
       galleryDevControls.activatePopupOpen = undefined;
       galleryDevControls.activatePopupImage = undefined;
+      galleryDevControls.setSubmenuOpen = undefined;
       galleryDevControls.togglePopupSwitch = undefined;
       galleryDevControls.toggleSubmenu = undefined;
     };
-  }, [activateImage, activateOpen, activatePopupSwitch, toggleSubmenu]);
+  }, [activateImage, activateOpen, activatePopupSwitch, setLoggedSubmenuOpen, toggleSubmenu]);
 
   return (
     <Box flexDirection="column" gap={10} styleClass="panel popup-panel" width={340}>

@@ -8,6 +8,11 @@ declare module "gi://Gio" {
   export default Gio;
 }
 
+declare module "gi://GLib" {
+  const GLib: any;
+  export default GLib;
+}
+
 declare module "gi://GObject" {
   const GObject: {
     registerClass<T>(klass: T): T;

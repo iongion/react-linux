@@ -144,6 +144,34 @@ function assertPopupRows(tree) {
   assert(submenu.height >= 48, `Submenu row collapsed to ${submenu.height}px.`);
 }
 
+function assertPerformanceMonitor(dump) {
+  const performance = dump.performance;
+  assert(Boolean(performance), "Performance monitor metrics are missing from the native dump.");
+  assert(performance.measuring === true, "Performance monitor is not marked as measuring.");
+  assert(performance.samples >= 1, `Performance monitor has not sampled yet: ${JSON.stringify(performance)}.`);
+  assert(Number.isFinite(performance.uiFps), `UI FPS is not finite: ${JSON.stringify(performance)}.`);
+  assert(Number.isFinite(performance.jsFps), `JS FPS is not finite: ${JSON.stringify(performance)}.`);
+  assert(performance.uiFps >= 0, `UI FPS is negative: ${JSON.stringify(performance)}.`);
+  assert(performance.jsFps >= 0, `JS FPS is negative: ${JSON.stringify(performance)}.`);
+  assert(performance.uiFrames >= 0, `UI frame count is negative: ${JSON.stringify(performance)}.`);
+  assert(performance.jsFrames >= 0, `JS frame count is negative: ${JSON.stringify(performance)}.`);
+  assert(performance.sampleMs >= 500, `Performance sample was too short: ${JSON.stringify(performance)}.`);
+  assert(
+    typeof performance.label === "string" && performance.label.includes("UI") && performance.label.includes("JS"),
+    `Performance label is not usable: ${JSON.stringify(performance)}.`,
+  );
+  assert(
+    dump.performanceText === performance.label,
+    `Rendered performance text ${JSON.stringify(dump.performanceText)} does not match metrics label ${JSON.stringify(
+      performance.label,
+    )}.`,
+  );
+  assert(
+    allNodes(dump.indicator, (node) => node.text === performance.label).length > 0,
+    `Performance label ${JSON.stringify(performance.label)} is missing from the indicator actor tree.`,
+  );
+}
+
 function assertStepButtons(tree) {
   const buttons = allNodes(tree, (node) => hasClass(node, "progress-step-button")).sort((a, b) => a.x - b.x);
   assert(buttons.length === 2, `Expected two progress step buttons, found ${buttons.length}.`);
@@ -225,6 +253,7 @@ function dumpLayout(bus) {
 
 function assertBaseLayout(dump) {
   assert(dump.menuOpen === true, "Gallery menu is not open.");
+  assertPerformanceMonitor(dump);
   assert(
     dump.tree.height <= dump.stage.height,
     `Gallery height ${dump.tree.height}px exceeds stage height ${dump.stage.height}px.`,
@@ -261,7 +290,13 @@ function assertSameGeometry(before, after, description) {
 
 async function main() {
   const bus = privateBusAddress();
-  const steps = [["Open"], ["SetProgress", [35]], ["SetSlider", [0.35]], ["SetEntryText", ["Editable from UI smoke"]]];
+  const steps = [
+    ["Open"],
+    ["SetProgress", [35]],
+    ["SetSlider", [0.35]],
+    ["SetEntryText", ["Editable from UI smoke"]],
+    ["SetSubmenuOpen", [false]],
+  ];
 
   for (const [method, args = []] of steps) {
     callMethod(bus, method, args);
