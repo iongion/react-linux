@@ -141,7 +141,7 @@ stop_native_shell_host() {
 
 scan_shell_log_for_errors() {
   local log_file="$1"
-  if rg -i "Extension $UUID:|ReferenceError|TypeError|No property|No signal|Invalid value|GNOME Shell-CRITICAL|Gjs-CRITICAL" "$log_file"; then
+  if grep -Ei "Extension $UUID:|ReferenceError|TypeError|No property|No signal|Invalid value|GNOME Shell-CRITICAL|Gjs-CRITICAL" "$log_file"; then
     return 1
   fi
 }
@@ -151,7 +151,7 @@ require_headless_shell_dependencies() {
     echo "gnome-shell was not found; install GNOME Shell before running headless smoke." >&2
     exit 1
   fi
-  if ! gsettings list-schemas | rg -qx "org\\.gnome\\.shell"; then
+  if ! gsettings list-schemas | grep -qx "org\\.gnome\\.shell"; then
     echo "GNOME Shell gsettings schema org.gnome.shell was not found." >&2
     echo "Install the distro package that provides GNOME Shell schemas before running headless smoke." >&2
     exit 1
@@ -162,7 +162,7 @@ wait_for_headless_extension() {
   local log_file="$1"
   for _ in $(seq 1 80); do
     if gdbus call --session --dest org.gnome.Shell.Extensions --object-path /org/gnome/Shell/Extensions --method org.gnome.Shell.Extensions.GetExtensionInfo "$UUID" >/tmp/react-linux-gallery-info.txt 2>/tmp/react-linux-gallery-info.err; then
-      if rg -F "'enabled': <true>" /tmp/react-linux-gallery-info.txt >/dev/null; then
+      if grep -Fq "'enabled': <true>" /tmp/react-linux-gallery-info.txt; then
         sleep 1.5
         cat /tmp/react-linux-gallery-info.txt
         gdbus call --session --dest org.gnome.Shell.Extensions --object-path /org/gnome/Shell/Extensions --method org.gnome.Shell.Extensions.GetExtensionErrors "$UUID"
@@ -241,7 +241,7 @@ run_gnome_devkit() {
   last_stylesheet_mtime="$(file_mtime "$SCRIPT_DIR/gnome/stylesheet.css")"
   SHELL_PID="$(start_private_shell "$DEV_XDG_DATA_HOME" devkit "$DEV_LOG")"
   sleep 2
-  if rg -q "Failed to launch devkit" "$DEV_LOG"; then
+  if grep -q "Failed to launch devkit" "$DEV_LOG"; then
     echo "GNOME Shell started, but visible devkit support is missing on this system." >&2
     echo "Missing /usr/libexec/mutter-devkit; install the distro package that provides GNOME Shell devkit for a visible RAD window." >&2
     echo "The real headless Shell smoke still works: $0 gnome-smoke" >&2

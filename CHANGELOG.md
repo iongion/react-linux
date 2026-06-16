@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Fixed
 
 - Linux provisioning now installs required `gnome-shell` separately from optional `mutter-dev-bin`, so Ubuntu 24.04 CI runners can run headless GNOME Shell smoke even when visible Mutter devkit packages are unavailable.
+- GNOME Shell gallery runner no longer depends on `rg`, so headless smoke can run on fresh CI images without extra search tools.
 
 ## [1.0.0] - 2026-06-16
 
